@@ -31,8 +31,7 @@ uint32_t WriteRequest::getBufferSize() {
 
 int16_t WriteRequest::toSnappyProto(uint8_t* output) {
     errmsg = nullptr;
-    DEBUG_PRINT("Begin serialization: ");
-    PRINT_HEAP();
+    log_d("Begin serialization: %d", ESP.getFreeHeap());
     uint8_t buffer[_bufferSize];
     pb_ostream_t os = pb_ostream_from_buffer(buffer, sizeof(buffer));
 
@@ -45,17 +44,14 @@ int16_t WriteRequest::toSnappyProto(uint8_t* output) {
     rw.timeseries.arg = &st;
     rw.timeseries.funcs.encode = &callback_encode_timeseries;
     if (!pb_encode(&os, prometheus_WriteRequest_fields, &rw)) {
-        DEBUG_PRINT("Error from proto encode: ");
-        DEBUG_PRINTLN(PB_GET_ERROR(&os));
+        log_d("Error from proto encode: %s", PB_GET_ERROR(&os));
         errmsg = (char*)"Error creating protobuf, enable debug logging to see more details";
         return -1;
     }
 
-    DEBUG_PRINT("Bytes used for serialization: ");
-    DEBUG_PRINTLN(os.bytes_written);
+    log_d("Bytes used for serialization: %d", os.bytes_written);
 
-    DEBUG_PRINT("After serialization: ");
-    PRINT_HEAP();
+    log_d("After serialization: %d", ESP.getFreeHeap());
 
     // for (uint16_t i = 0; i < os.bytes_written; i++)
     // {
@@ -69,12 +65,10 @@ int16_t WriteRequest::toSnappyProto(uint8_t* output) {
 
     snappy_env env;
     snappy_init_env(&env);
-    DEBUG_PRINT("After Compression Init: ");
-    PRINT_HEAP();
+    log_d("After Compression Init:  %d", ESP.getFreeHeap());
 
     size_t len = snappy_max_compressed_length(os.bytes_written);
-    DEBUG_PRINT("Required buffer size for compression: ");
-    DEBUG_PRINTLN(len);
+    log_d("Required buffer size for compression:  %d", len);
 
     if (len > _bufferSize) {
         errmsg = (char*)"WriteRequest bufferSize is too small and will be overun during compression! Enable debug logging to see required buffer size";
@@ -84,11 +78,9 @@ int16_t WriteRequest::toSnappyProto(uint8_t* output) {
     snappy_compress(&env, (char*)buffer, os.bytes_written, (char*)output, &len);
     snappy_free_env(&env);
 
-    DEBUG_PRINT("Compressed Len: ");
-    DEBUG_PRINTLN(len);
+    log_d("Compressed Len: %d", len);
 
-    DEBUG_PRINT("After Compression: ");
-    PRINT_HEAP();
+    log_d("After Compression: %d", ESP.getFreeHeap());
 
     return len;
 }

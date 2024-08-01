@@ -5,7 +5,7 @@
 #include <snappy.h>
 #include <pb.h>
 #include "proto/remote.pb.h"
-#include "PromDebug.h"
+//#include "PromDebug.h"
 
 class WriteRequest {
 public:

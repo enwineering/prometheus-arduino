@@ -61,8 +61,8 @@ bool PromClient::begin() {
 
     // Create the HttpClient
     _httpClient = new HttpClient(*_client, _url, _port);
-    _httpClient->setTimeout(15000);
-    _httpClient->setHttpResponseTimeout(15000);
+    _httpClient->setTimeout(30000);
+    _httpClient->setHttpResponseTimeout(30000);
     _httpClient->connectionKeepAlive();
     return true;
 };
