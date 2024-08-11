@@ -10,8 +10,11 @@ struct LabelSet {
 
 class TimeSeries {
 public:
-    TimeSeries(uint16_t batchSize, const char* name, const char* labels);
+//    TimeSeries(uint16_t batchSize, const char* name, const char* labels);
+    TimeSeries();
     ~TimeSeries();
+
+    void define(uint16_t batchSize, const char* name, const char* labels);
 
     bool addSample(int64_t tsMillis, double val);
     void resetSamples();
